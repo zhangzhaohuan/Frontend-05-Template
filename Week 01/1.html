@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>游戏</title>
+</head>
+
+<body>
+  <div id="board"></div>
+</body>
+<style>
+  .item {
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    border: solid 1px #ddd;
+    background: green;
+    vertical-align: middle;
+
+    line-height: 100px;
+    text-align: center;
+  }
+
+  .item:hover {
+    cursor: pointer;
+  }
+</style>
+<script>
+
+  const pattern = [
+    [0, 0, 0 ],
+    [2, 0, 0],
+    [0, 0, 0]
+  ]
+
+  let color = 1;
+
+  function show() {
+    let board = document.getElementById('board');
+    board.innerHTML = '';
+
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        let cell = document.createElement('div');
+        cell.classList.add('item');
+        cell.innerText = pattern[i][j] == 1 ? "❌" : pattern[i][j] == 2 ? "⭕️" : '';
+        cell.addEventListener('click', () => { move(j, i) })
+        board.appendChild(cell);
+      }
+      board.appendChild(document.createElement('br'));
+    }
+  };
+
+
+  function move(x, y) {
+    pattern[y][x] = color;
+    if (check(pattern,color)) {
+      alert(color == 1 ? "❌ is winner" : "⭕️ is winner");
+    }
+    color = 2 / color;
+    show();
+    if(willWin(pattern,color)){
+      console.log(color == 1 ? "❌ will win" : "⭕️ will win")
+    }
+
+  }
+
+  function check(pattern,color) {
+
+
+    // 行
+    for (let i = 0; i < 3; i++) {
+      let win = true;
+      for (let j = 0; j < 3; j++) {
+        if (pattern[i][j] !== color) {
+          win = false;
+        }
+      }
+      if (win) return true
+    }
+
+
+    // 列
+    for (let j = 0; j < 3; j++) {
+      let win = true;
+      for (let i = 0; i < 3; i++) {
+        if (pattern[i][j] !== color) {
+          win = false;
+        }
+      }
+      if (win) return true
+    }
+    // 对角线1:y=x
+
+    {
+      let win = true;
+      for (let i = 0; i < 3; i++) {
+        if (pattern[i][i] !== color) {
+          win = false;
+        }
+      }
+      if (win) return true
+    }
+    // 对角线2:y=-x+2
+    {
+      let win = true;
+      for (let i = 0; i < 3; i++) {
+        if (pattern[i][2-i] !== color) {
+          win = false;
+        }
+      }
+      if (win) return true
+    }
+
+    return false;
+  }
+
+
+
+  function willWin(pattern,color) {
+
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if(pattern[i][j])continue;
+
+        let temp = clone(pattern);
+        temp[i][j]= color;
+        if(check(temp,color)){
+          return true;
+        }
+      }
+      
+    }
+    return false;
+    
+  }
+
+  function clone(pattern) {
+    return JSON.parse(JSON.stringify(pattern));
+  }
+  show()
+
+</script>
+
+</html>
